@@ -5,6 +5,7 @@ import SystemContext from "./components/SystemContext";
 import TrickleMetrics from "./components/TrickleMetrics";
 import SpaceMetrics from "./components/SpaceMetrics";
 import TopNavBar from "./components/TopNavBar";
+import Header from "./components/Header";
 import "./Dashboard.css";
 
 const SOURCES = ["jobs", "queue", "context", "trickle", "space"];

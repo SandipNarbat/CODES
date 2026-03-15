@@ -54,7 +54,7 @@ export default function GridOverview({ data }) {
   const jobKeys = Object.keys(sourceData);
 
   // Fallback headers if data empty
-  const columns = Array.from({ length: 12 }, (_, i) => i === 0 ? "M" : `S${i}`);
+  const columns = Array.from({ length: 17 }, (_, i) => i === 0 ? "M" : `S${i}`);
 
   return (
     <div className="card">
@@ -102,7 +102,7 @@ export default function GridOverview({ data }) {
       </div>
 
       <div className="grid-footer" style={{ gridTemplateColumns: '1fr', marginTop: '0' }}>
-        <div className="card legend-card" style={{ padding: '12px 20px' }}>
+        <div className="info legend-card" style={{ padding: '12px 20px' }}>
           <div className="legend-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginTop: 0 }}>
             <div className="legend-item"><IconCheck /> <span>System OK</span></div>
             <div className="legend-item"><IconWarning /> <span>No Data / Warn</span></div>

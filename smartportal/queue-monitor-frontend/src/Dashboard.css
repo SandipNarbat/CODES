@@ -6,6 +6,7 @@
   flex-direction: column;
 }
 
+
 .dashboard-content-wrapper {
   flex: 1;
   display: flex;
@@ -20,6 +21,7 @@
   gap: 12px;
 }
 
+
 .dashboard-secondary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -33,6 +35,22 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  height: 550px;
+
+}
+.queuecard{
+    background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 550px;
+}
+
+.info{
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
 }
 
 .card-header {
@@ -63,21 +81,22 @@
 .table-wrap {
   width: 100%;
   overflow-x: hidden; /* no horizontal scroll */
-  height: 300px;
+  /* height: 300px; */
 }
-
+.table-wrap::-webkit-scrollbar {
+    display: none;
+}
 
 table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto;
-  
+  table-layout: fixed;
 }
 
 th, td {
-  padding: 8px 4px;
+  padding: 6px 2px;
   text-align: center;
-  font-size: 10px;
+  font-size: 9px;
   white-space: nowrap;
   color: var(--text-secondary);
 }
@@ -86,11 +105,13 @@ th:first-child, td:first-child {
   text-align: left;
   font-weight: 600;
   color: var(--text-primary);
-  padding-left: 12px;
+  padding-left: 8px;
+  width: 90px;
+  white-space: nowrap;
 }
 
 th:last-child, td:last-child {
-  padding-right: 12px;
+  padding-right: 4px;
 }
 
 th {
@@ -127,16 +148,16 @@ tbody tr:hover {
 
 /* Pills & Tags */
 .pill {
-  padding: 4px 8px;
-  border-radius: 10px;
-  font-size: 10px;
+  padding: 2px 2px;
+  border-radius: 4px;
+  font-size: 8px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
+  min-width: 16px;
 }
 
 .pill-none {

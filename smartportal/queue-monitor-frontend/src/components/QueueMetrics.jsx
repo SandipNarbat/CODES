@@ -33,11 +33,11 @@ export default function QueueMetrics({ data }) {
   // const queueKeys = Object.keys(sourceData).filter(k => k !== 'abc1'); // clean out sample
   const queueKeys = Object.keys(sourceData)
 
-  const columns = ["M", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12"];
+  const columns = ["M", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12", "S13", "S14", "S15", "S16"];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div className="card" style={{ height: '100%' }}>
+      <div className="queuecard">
         <div className="card-header border-b border-[var(--border-color)] pb-4 mb-0 flex justify-between">
           <div className="card-title text-[14px]">
             <IconList />
