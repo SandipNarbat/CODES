@@ -30,7 +30,8 @@ function QueueAnimatedCell({ value }) {
 
 export default function QueueMetrics({ data }) {
   const sourceData = data || {};
-  const queueKeys = Object.keys(sourceData).filter(k => k !== 'abc1'); // clean out sample
+  // const queueKeys = Object.keys(sourceData).filter(k => k !== 'abc1'); // clean out sample
+  const queueKeys = Object.keys(sourceData)
 
   const columns = ["M", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12"];
 
