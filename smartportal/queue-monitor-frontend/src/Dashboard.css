@@ -173,16 +173,24 @@ tbody tr:hover {
 .pill-yellow {
   background: rgba(210, 153, 34, 0.2);
   color: #e5c07b;
+  width: 24px;
+}
+.pill-yellow-check {
+  background: rgba(210, 153, 34, 0.2);
+  color: #e5c07b;
 }
 
 .pill-orange {
   background: rgba(209, 88, 13, 1);
   color: #fff;
+  width: 24px;
+
 }
 
 .pill-red {
   background: rgba(218, 54, 51, 1);
   color: #fff;
+  width: 24px;
 }
 
 /* Buttons */

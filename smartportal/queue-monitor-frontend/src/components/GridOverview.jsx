@@ -3,7 +3,7 @@ import { IconCheck, IconWarning, IconError, IconLock, IconSlash, IconSnow, IconZ
 
 function renderJobCell(jobName, val) {
   if (jobName === "CHECK RC") {
-    return val === "NO CHECK RC" ? <span className="pill pill-none">NONE</span> : <span className="pill pill-yellow">CHECK</span>;
+    return val === "NO CHECK RC" ? <span className="pill pill-none">NONE</span> : <span className="pill pill-yellow-check">CHECK</span>;
   }
   
   if (jobName === "CONNECTIVITY") {
@@ -54,7 +54,7 @@ export default function GridOverview({ data }) {
   const jobKeys = Object.keys(sourceData);
 
   // Fallback headers if data empty
-  const columns = Array.from({ length: 17 }, (_, i) => i === 0 ? "M" : `S${i}`);
+  const columns = Array.from({ length: 16 }, (_, i) => i === 0 ? "M" : `S${i}`);
 
   return (
     <div className="card">
