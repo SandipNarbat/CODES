@@ -231,12 +231,12 @@ function createWatcher(name, filePath, readerFn) {
 // --------------------------------------------------
 
 const FILE_CONFIG = [
-  { name: "jobs", path: "jobs_list.txt", reader: readJobsState },
-  { name: "queue", path: "queue_file.txt", reader: readQueueState },
-  { name: "payments", path: "payment.txt", reader: readPaymentsState }, // still present for future config if needed
-  { name: "context", path: "context.txt", reader: readContextState },
-  { name: "trickle", path: "trickle.txt", reader: readTrickleState },
-  { name: "space", path: "space.txt", reader: readSpaceState },
+  { name: "jobs", path: "files/jobs_list.txt", reader: readJobsState },
+  { name: "queue", path: "files/queue_file.txt", reader: readQueueState },
+  { name: "payments", path: "files/payment.txt", reader: readPaymentsState }, // still present for future config if needed
+  { name: "context", path: "files/context.txt", reader: readContextState },
+  { name: "trickle", path: "files/trickle.txt", reader: readTrickleState },
+  { name: "space", path: "files/space.txt", reader: readSpaceState },
 ];
 const watchers = {};
 
