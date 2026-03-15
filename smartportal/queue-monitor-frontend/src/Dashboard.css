@@ -63,12 +63,15 @@
 .table-wrap {
   width: 100%;
   overflow-x: hidden; /* no horizontal scroll */
+  height: 300px;
 }
+
 
 table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
+  
 }
 
 th, td {
@@ -195,6 +198,7 @@ tbody tr:hover {
 
 .legend-card, .health-card {
   padding: 20px;
+  margin: 8px;
 }
 
 .legend-grid {
