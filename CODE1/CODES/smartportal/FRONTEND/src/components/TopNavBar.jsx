@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../assets/Component 2.png';
 import './TopNavBar.css';
-import InfoPopup from '../pages/legend';
+
+import Legend from '../pages/legend';
+import CBSFlow from '../pages/CBSFlow';
+import BranchTellerInterval from '../pages/BranchTellerInterval';
+import MilestoneDetails from '../pages/MilestoneDetails';
+import BranchLoggedIn from '../pages/BranchLoggedIn';
+import TellerLoggedIn from '../pages/TellerLoggedIn';
+import TxnDesc from '../pages/TxnDesc';
+import AllFiles from '../pages/AllFiles';
+import UpiMr from '../pages/UpiMr';
+import NeftInvalid from '../pages/NeftInvalid';
+import RepostingStatus from '../pages/RepostingStatus';
+import RepostFail from '../pages/RepostFail';
+import RtgsIncomingGateway from '../pages/RtgsIncomingGateway';
+import RtgsIncomingAck from '../pages/RtgsIncomingAck';
 
 // Simple calendar icon SVG
 const IconCalendar = () => (
@@ -109,28 +123,20 @@ export default function TopNavBar() {
         </div>
       </div>
 
-      {activePopup && (
-        <InfoPopup 
-          title={
-            activePopup === 'legend' ? 'Demo Legend' :
-            activePopup === 'cbs-flow' ? 'CBS Flow' :
-            activePopup === 'branch-teller-interval' ? 'Branch Teller Interval' :
-            activePopup === 'milestone-details' ? 'Milestone Details' :
-            activePopup === 'branch-logged-in' ? 'Branch Logged In' :
-            activePopup === 'teller-logged-in' ? 'Teller Logged In' :
-            activePopup === 'txn-desc' ? 'TXN DESC' :
-            activePopup === 'all-files' ? 'ALL FILES' :
-            activePopup === 'upi-mr' ? 'UPI (MR)' :
-            activePopup === 'neft-invalid' ? 'NEFT Invalid (D/N)' :
-            activePopup === 'reposting-status' ? 'Reposting Status' :
-            activePopup === 'repost-fail' ? 'Repost Fail' :
-            activePopup === 'rtgs-incoming-gateway' ? 'RTGS Incoming Gateway' :
-            activePopup === 'rtgs-incoming-ack' ? 'RTGS Incoming ACK C54' : 'Information'
-          }
-          path={`/info/${activePopup}`} 
-          onClose={() => setActivePopup(null)} 
-        />
-      )}
+      {activePopup === 'legend' && <Legend onClose={() => setActivePopup(null)} />}
+      {activePopup === 'cbs-flow' && <CBSFlow onClose={() => setActivePopup(null)} />}
+      {activePopup === 'branch-teller-interval' && <BranchTellerInterval onClose={() => setActivePopup(null)} />}
+      {activePopup === 'milestone-details' && <MilestoneDetails onClose={() => setActivePopup(null)} />}
+      {activePopup === 'branch-logged-in' && <BranchLoggedIn onClose={() => setActivePopup(null)} />}
+      {activePopup === 'teller-logged-in' && <TellerLoggedIn onClose={() => setActivePopup(null)} />}
+      {activePopup === 'txn-desc' && <TxnDesc onClose={() => setActivePopup(null)} />}
+      {activePopup === 'all-files' && <AllFiles onClose={() => setActivePopup(null)} />}
+      {activePopup === 'upi-mr' && <UpiMr onClose={() => setActivePopup(null)} />}
+      {activePopup === 'neft-invalid' && <NeftInvalid onClose={() => setActivePopup(null)} />}
+      {activePopup === 'reposting-status' && <RepostingStatus onClose={() => setActivePopup(null)} />}
+      {activePopup === 'repost-fail' && <RepostFail onClose={() => setActivePopup(null)} />}
+      {activePopup === 'rtgs-incoming-gateway' && <RtgsIncomingGateway onClose={() => setActivePopup(null)} />}
+      {activePopup === 'rtgs-incoming-ack' && <RtgsIncomingAck onClose={() => setActivePopup(null)} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 
-export default function Legend({ onClose }) {
+export default function RtgsIncomingAck({ onClose }) {
   const isStandalone = !onClose;
 
   // Standalone tab logic to broadcast its closure
@@ -9,7 +9,7 @@ export default function Legend({ onClose }) {
       const channel = new BroadcastChannel('popup_sync_channel');
       
       const handleBeforeUnload = () => {
-        channel.postMessage({ type: 'TAB_CLOSED', path: '/legend' });
+        channel.postMessage({ type: 'TAB_CLOSED', path: '/rtgs-incoming-ack' });
       };
 
       window.addEventListener('beforeunload', handleBeforeUnload);
@@ -49,12 +49,12 @@ export default function Legend({ onClose }) {
         boxSizing: 'border-box'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ marginTop: 0 }}>Demo Legend</h2>
+            <h2 style={{ marginTop: 0 }}>RTGS Incoming ACK C54</h2>
             <div style={{ display: 'flex', gap: '10px' }}>
                 {!isStandalone && (
                   <button 
                   onClick={() => {
-                    window.open('/legend', '_blank');
+                    window.open('/rtgs-incoming-ack', '_blank');
                     if (onClose) onClose();
                   }}
                   style={{
@@ -89,7 +89,7 @@ export default function Legend({ onClose }) {
                   <button 
                   onClick={() => {
                     const channel = new BroadcastChannel('popup_sync_channel');
-                    channel.postMessage({ type: 'TAB_CLOSED', path: '/legend' });
+                    channel.postMessage({ type: 'TAB_CLOSED', path: '/rtgs-incoming-ack' });
                     channel.close();
                     window.close();
                   }} 
@@ -110,7 +110,7 @@ export default function Legend({ onClose }) {
         </div>
         <div style={{ marginTop: '1rem', marginBottom: '2rem', lineHeight: '1.5' }}>
             <p>
-              This is a placeholder for the <strong>Demo Legend</strong> explanation.<br/>
+              This is a placeholder for the <strong>RTGS Incoming ACK C54</strong> explanation.<br/>
               Add your content here.
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, rerum, omnis debitis at eveniet, repellendus inventore iure molestiae dolorem quo dolorum!
             </p>
