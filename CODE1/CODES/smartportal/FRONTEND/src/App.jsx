@@ -14,11 +14,14 @@ import RepostingStatus from "./pages/RepostingStatus";
 import RepostFail from "./pages/RepostFail";
 import RtgsIncomingGateway from "./pages/RtgsIncomingGateway";
 import RtgsIncomingAck from "./pages/RtgsIncomingAck";
+import TopNavBar from "./components/TopNavBar";
 // import QueueMonitor from "./QueueMonitor";
 
 function App() {
   return (
-    <Routes>
+    <>
+      <TopNavBar />
+      <Routes>
       <Route path="/" element={<Dashboard />} />
       <Route path="/legend" element={<Legend />} />
       <Route path="/cbs-flow" element={<CBSFlow />} />
@@ -35,6 +38,7 @@ function App() {
       <Route path="/rtgs-incoming-gateway" element={<RtgsIncomingGateway />} />
       <Route path="/rtgs-incoming-ack" element={<RtgsIncomingAck />} />
     </Routes>
+    </>
   );
 }
 

@@ -4,7 +4,6 @@ import QueueMetrics from "./components/QueueMetrics";
 import SystemContext from "./components/SystemContext";
 import TrickleMetrics from "./components/TrickleMetrics";
 import SpaceMetrics from "./components/SpaceMetrics";
-import TopNavBar from "./components/TopNavBar";
 import "./Dashboard.css";
 
 const SOURCES = ["jobs", "queue", "context", "trickle", "space"];
@@ -90,7 +89,6 @@ export default function Dashboard() {
 
   return (
     <div className="app-root">
-      <TopNavBar />
       <div className="dashboard-content-wrapper">
         <div className="dashboard">
           <GridOverview data={data.jobs} />
