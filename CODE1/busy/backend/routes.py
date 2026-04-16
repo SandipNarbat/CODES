@@ -70,54 +70,6 @@ async def list_customers(db: Session = Depends(get_db)):
     return result
 
 
-# ── GET /ledger/{customer_id} ────────────────────────────────────
-
-@router.get("/ledger/{customer_id}", response_model=List[LedgerEntryOut])
-async def get_ledger(customer_id: int, db: Session = Depends(get_db)):
-    customer = db.query(Customer).filter(Customer.id == customer_id).first()
-    if not customer:
-        raise HTTPException(status_code=404, detail="Customer not found")
-        
-    if not customer.account_id:
-        return []
-
-    balance_expr = func.sum(Transaction.debit - Transaction.credit).over(
-        order_by=(Voucher.date, Transaction.id)
-    ).label('balance')
-
-    entries = (
-        db.query(
-            Transaction.id.label("id"),
-            Voucher.date.label("date"),
-            Voucher.voucher_type.label("voucher_type"),
-            Voucher.ref_id.label("ref_id"),
-            Transaction.debit.label("debit"),
-            Transaction.credit.label("credit"),
-            balance_expr
-        )
-        .join(Voucher, Transaction.voucher_id == Voucher.id)
-        .filter(Transaction.account_id == customer.account_id)
-        .order_by(Voucher.date, Transaction.id)
-        .all()
-    )
-
-    result = []
-    for e in entries:
-        bal = float(e.balance)
-        dr_cr = "Dr" if bal >= 0 else "Cr"
-        result.append({
-            "id": e.id,
-            "date": e.date,
-            "voucher_type": e.voucher_type,
-            "ref_id": e.ref_id,
-            "debit": float(e.debit),
-            "credit": float(e.credit),
-            "balance": bal,
-            "dr_cr": dr_cr
-        })
-    return result
-
-
 # ── POST /ledger/payment ───────────────────────────────────────────
 
 @router.post("/ledger/payment", response_model=LedgerEntryOut)
@@ -175,6 +127,53 @@ async def record_payment(payload: PaymentCreate, db: Session = Depends(get_db)):
         "balance": 0.0,
         "dr_cr": "Cr"
     }
+
+# ── GET /ledger/{customer_id} ────────────────────────────────────
+
+@router.get("/ledger/{customer_id}", response_model=List[LedgerEntryOut])
+async def get_ledger(customer_id: int, db: Session = Depends(get_db)):
+    customer = db.query(Customer).filter(Customer.id == customer_id).first()
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+        
+    if not customer.account_id:
+        return []
+
+    balance_expr = func.sum(Transaction.debit - Transaction.credit).over(
+        order_by=(Voucher.date, Transaction.id)
+    ).label('balance')
+
+    entries = (
+        db.query(
+            Transaction.id.label("id"),
+            Voucher.date.label("date"),
+            Voucher.voucher_type.label("voucher_type"),
+            Voucher.ref_id.label("ref_id"),
+            Transaction.debit.label("debit"),
+            Transaction.credit.label("credit"),
+            balance_expr
+        )
+        .join(Voucher, Transaction.voucher_id == Voucher.id)
+        .filter(Transaction.account_id == customer.account_id)
+        .order_by(Voucher.date, Transaction.id)
+        .all()
+    )
+
+    result = []
+    for e in entries:
+        bal = float(e.balance)
+        dr_cr = "Dr" if bal >= 0 else "Cr"
+        result.append({
+            "id": e.id,
+            "date": e.date,
+            "voucher_type": e.voucher_type,
+            "ref_id": e.ref_id,
+            "debit": float(e.debit),
+            "credit": float(e.credit),
+            "balance": bal,
+            "dr_cr": dr_cr
+        })
+    return result
 
 
 # ── POST /invoice ────────────────────────────────────────────────
