@@ -42,12 +42,11 @@ export default function LedgerModal({ customerId, customerName, onClose }) {
 
     setIsPaying(true);
     try {
-      await fetchJSON(`${API}/voucher/payment`, {
+      await fetchJSON(`${API}/ledger/payment`, {
         method: "POST",
         body: JSON.stringify({
-          party_id: customerId,
-          amount: Number(payAmount),
-          type: "RECEIPT", // BUSY-style voucher
+          customer_id: customerId,
+          amount: Number(payAmount)
         })
       });
 
