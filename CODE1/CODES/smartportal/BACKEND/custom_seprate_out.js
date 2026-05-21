@@ -3,6 +3,8 @@ const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
 const cors = require("cors");
+const EventEmitter = require("events");
+const backendEmitter = new EventEmitter();
 
 const app = express();
 const PORT = 8000;
@@ -168,6 +170,12 @@ async function readtellerlogin(filePath) {
   state["teller login no"] = content;
   return state;
 }
+async function readreposting(filePath) {
+  const state = {};
+  const content = await fsp.readFile(filePath, "utf8");
+  state["reposting no"] = content;
+  return state;
+}
 
 // --------------------------------------------------
 // Watcher Factory (Now Per-Source Clients)
@@ -183,6 +191,7 @@ function createWatcher(name, filePath, readerFn) {
     for (const res of clients) {
       res.write(payload);
     }
+    backendEmitter.emit("change", { source: name, event, data });
   }
 
   async function processFileChange() {
@@ -252,6 +261,7 @@ const FILE_CONFIG = [
   { name: "space", path: "files/space.txt", reader: readSpaceState },
   { name: "branchlogin", path: "files/branchlogin.txt", reader: readbranchlogin },
   { name: "tellerlogin", path: "files/tellerlogin.txt", reader: readtellerlogin },
+  { name: "repostng", path: "files/reposting.txt", reader: readreposting },
 ];
 const watchers = {};
 
@@ -292,6 +302,41 @@ app.get("/events/:source", (req, res) => {
   req.on("close", () => {
     clearInterval(pingInterval);
     watcher.removeClient(res);
+  });
+});
+
+// --------------------------------------------------
+// Unified SSE Route (Solves browser connection limits)
+// --------------------------------------------------
+
+app.get("/events-unified", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  res.flushHeaders?.();
+
+  // Send initial snapshot for all watchers
+  FILE_CONFIG.forEach(config => {
+    const watcher = watchers[config.name];
+    if (watcher) {
+      res.write(`event: ${config.name}\ndata: ${JSON.stringify({ type: "snapshot", payload: watcher.getState() })}\n\n`);
+    }
+  });
+
+  const onChange = ({ source, event, data }) => {
+    res.write(`event: ${source}\ndata: ${JSON.stringify({ type: event, payload: data })}\n\n`);
+  };
+
+  backendEmitter.on("change", onChange);
+
+  const pingInterval = setInterval(() => {
+    res.write(": ping\n\n");
+  }, 15000);
+
+  req.on("close", () => {
+    clearInterval(pingInterval);
+    backendEmitter.off("change", onChange);
   });
 });
 

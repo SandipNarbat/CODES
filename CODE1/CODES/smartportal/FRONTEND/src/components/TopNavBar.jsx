@@ -11,63 +11,10 @@ const IconCalendar = () => (
     <line x1="3" y1="10" x2="21" y2="10"></line>
   </svg>
 );
-export default function TopNavBar() {
+export default function TopNavBar({ branchCount = "0", tellerCount = "0" , repostingCount = "0" }) {
   const [marketDate, setMarketDate] = React.useState("2025-11-17");
-  const [branchCount, setBranchCount] = React.useState("25242");
-  const [tellerCount, setTellerCount] = React.useState("130820");
   const navigate = useNavigate();
   const location = useLocation();
-  React.useEffect(() => {
-    const connectToSource = (source, setStateFn, keyName) => {
-      let es;
-      let reconnectTimer;
-      
-      const connect = (retry = 0) => {
-        es = new EventSource(`http://localhost:8000/events/${source}`);
-        console.log(`Connecting to ${source} source...`);
-        es.onerror = () => {
-          es.close();
-          const timeout = Math.min(5000, 1000 * (retry + 1));
-          reconnectTimer = setTimeout(() => {
-            connect(retry + 1);
-          }, timeout);
-        };
-        es.addEventListener("snapshot", (e) => {
-          try {
-            const data = JSON.parse(e.data);
-            if (data && data[keyName] !== undefined) {
-              setStateFn(data[keyName]);
-            }
-          } catch (err) {
-            console.error(`Error parsing snapshot for ${source}:`, err);
-          }
-        });
-        es.addEventListener("delta", (e) => {
-          try {
-            const delta = JSON.parse(e.data);
-            if (delta.type === "new" && delta.metrics !== undefined) {
-              setStateFn(delta.metrics);
-            } else if (delta.type === "update" && delta.changes && delta.changes.length > 0) {
-              setStateFn(delta.changes[0].new);
-            }
-          } catch (err) {
-            console.error(`Error parsing delta for ${source}:`, err);
-          }
-        });
-      };
-      connect();
-      return () => {
-        if (es) es.close();
-        if (reconnectTimer) clearTimeout(reconnectTimer);
-      };
-    };
-    const cleanupBranch = connectToSource("branchlogin", setBranchCount, "branch login no");
-    const cleanupTeller = connectToSource("tellerlogin", setTellerCount, "teller login no");
-    return () => {
-      cleanupBranch();
-      cleanupTeller();
-    };
-  }, []);
   const formattedMarketDate = marketDate.replace(/-/g, ""); // e.g. 20251117
   return (
     <div className="top-navbar-container">
@@ -120,7 +67,7 @@ export default function TopNavBar() {
           </div>
           <div className={`badge light ${location.pathname === '/reposting-status' ? 'active' : ''}`} onClick={() => navigate('/reposting-status')} style={{ cursor: 'pointer' }}>REPOSTING STATUS</div>
           <div className={`badge light outline-orange outline ${location.pathname === '/repost-fail' ? 'active' : ''}`} onClick={() => navigate('/repost-fail')} style={{ cursor: 'pointer' }}>
-            <span className="text-orange">Repost Fail: <strong>0</strong></span>
+            <span className="text-orange">Repost Fail: <strong>{repostingCount}</strong></span>
           </div>
           <div className={`badge light ${location.pathname === '/rtgs-incoming-gateway' ? 'active' : ''}`} onClick={() => navigate('/rtgs-incoming-gateway')} style={{ cursor: 'pointer' }}>RTGS INCOMING GATEWAY</div>
           <div className={`badge light ${location.pathname === '/rtgs-incoming-ack' ? 'active' : ''}`} onClick={() => navigate('/rtgs-incoming-ack')} style={{ cursor: 'pointer' }}>RTGS INCOMING ACK C54</div>
