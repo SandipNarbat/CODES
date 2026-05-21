@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/Component 2.png';
 import './TopNavBar.css';
-
 // Simple calendar icon SVG
 const IconCalendar = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -12,14 +11,64 @@ const IconCalendar = () => (
     <line x1="3" y1="10" x2="21" y2="10"></line>
   </svg>
 );
-
 export default function TopNavBar() {
   const [marketDate, setMarketDate] = React.useState("2025-11-17");
+  const [branchCount, setBranchCount] = React.useState("25242");
+  const [tellerCount, setTellerCount] = React.useState("130820");
   const navigate = useNavigate();
   const location = useLocation();
-
+  React.useEffect(() => {
+    const connectToSource = (source, setStateFn, keyName) => {
+      let es;
+      let reconnectTimer;
+      
+      const connect = (retry = 0) => {
+        es = new EventSource(`http://localhost:8000/events/${source}`);
+        console.log(`Connecting to ${source} source...`);
+        es.onerror = () => {
+          es.close();
+          const timeout = Math.min(5000, 1000 * (retry + 1));
+          reconnectTimer = setTimeout(() => {
+            connect(retry + 1);
+          }, timeout);
+        };
+        es.addEventListener("snapshot", (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (data && data[keyName] !== undefined) {
+              setStateFn(data[keyName]);
+            }
+          } catch (err) {
+            console.error(`Error parsing snapshot for ${source}:`, err);
+          }
+        });
+        es.addEventListener("delta", (e) => {
+          try {
+            const delta = JSON.parse(e.data);
+            if (delta.type === "new" && delta.metrics !== undefined) {
+              setStateFn(delta.metrics);
+            } else if (delta.type === "update" && delta.changes && delta.changes.length > 0) {
+              setStateFn(delta.changes[0].new);
+            }
+          } catch (err) {
+            console.error(`Error parsing delta for ${source}:`, err);
+          }
+        });
+      };
+      connect();
+      return () => {
+        if (es) es.close();
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+      };
+    };
+    const cleanupBranch = connectToSource("branchlogin", setBranchCount, "branch login no");
+    const cleanupTeller = connectToSource("tellerlogin", setTellerCount, "teller login no");
+    return () => {
+      cleanupBranch();
+      cleanupTeller();
+    };
+  }, []);
   const formattedMarketDate = marketDate.replace(/-/g, ""); // e.g. 20251117
-
   return (
     <div className="top-navbar-container">
       {/* Top Tabs Row */}
@@ -42,7 +91,6 @@ export default function TopNavBar() {
             <span className="flag-label">MFLAG</span>
             <span className="flag-date">{formattedMarketDate}</span>
           </div>
-
           <div className="date-picker-wrapper">
             <label htmlFor="market-date-picker" className="change-date-btn">
               <IconCalendar /> Change Date
@@ -57,12 +105,13 @@ export default function TopNavBar() {
           </div>
         </div>
       </div>
-
       {/* Metric Badges / Buttons Rows */}
       <div className="metrics-badges-container">
         <div className="badges-row">
-          <div className={`badge dark ${location.pathname === '/branch-logged-in' ? 'active' : ''}`} onClick={() => navigate('/branch-logged-in')} style={{ cursor: 'pointer' }}>Branch logged in: <strong>25242</strong></div>
-          <div className={`badge dark border-right ${location.pathname === '/teller-logged-in' ? 'active' : ''}`} onClick={() => navigate('/teller-logged-in')} style={{ cursor: 'pointer' }}>Teller logged in: <strong>130820</strong></div>
+          {/* <div className={`badge dark ${location.pathname === '/branch-logged-in' ? 'active' : ''}`} onClick={() => navigate('/branch-logged-in')} style={{ cursor: 'pointer' }}>Branch logged in: <strong>25242</strong></div> */}
+          {/* <div className={`badge dark border-right ${location.pathname === '/teller-logged-in' ? 'active' : ''}`} onClick={() => navigate('/teller-logged-in')} style={{ cursor: 'pointer' }}>Teller logged in: <strong>130820</strong></div> */}
+          <div className={`badge dark ${location.pathname === '/branch-logged-in' ? 'active' : ''}`} onClick={() => navigate('/branch-logged-in')} style={{ cursor: 'pointer' }}>Branch logged in: <strong>{branchCount}</strong></div>
+          <div className={`badge dark border-right ${location.pathname === '/teller-logged-in' ? 'active' : ''}`} onClick={() => navigate('/teller-logged-in')} style={{ cursor: 'pointer' }}>Teller logged in: <strong>{tellerCount}</strong></div>
           <div className={`badge light ${location.pathname === '/txn-desc' ? 'active' : ''}`} onClick={() => navigate('/txn-desc')} style={{ cursor: 'pointer' }}>TXN DESC</div>
           <div className={`badge light ${location.pathname === '/all-files' ? 'active' : ''}`} onClick={() => navigate('/all-files')} style={{ cursor: 'pointer' }}>ALL FILES</div>
           <div className={`badge light ${location.pathname === '/upi-mr' ? 'active' : ''}`} onClick={() => navigate('/upi-mr')} style={{ cursor: 'pointer' }}>UPI(MR)</div>

@@ -156,6 +156,19 @@ async function readSpaceState(filePath) {
   return state;
 }
 
+async function readbranchlogin(filePath) {
+  const state = {};
+  const content = await fsp.readFile(filePath, "utf8");
+  state["branch login no"] = content;
+  return state;
+}
+async function readtellerlogin(filePath) {
+  const state = {};
+  const content = await fsp.readFile(filePath, "utf8");
+  state["teller login no"] = content;
+  return state;
+}
+
 // --------------------------------------------------
 // Watcher Factory (Now Per-Source Clients)
 // --------------------------------------------------
@@ -237,6 +250,8 @@ const FILE_CONFIG = [
   { name: "context", path: "files/context.txt", reader: readContextState },
   { name: "trickle", path: "files/trickle.txt", reader: readTrickleState },
   { name: "space", path: "files/space.txt", reader: readSpaceState },
+  { name: "branchlogin", path: "files/branchlogin.txt", reader: readbranchlogin },
+  { name: "tellerlogin", path: "files/tellerlogin.txt", reader: readtellerlogin },
 ];
 const watchers = {};
 
