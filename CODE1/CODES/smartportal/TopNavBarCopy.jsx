@@ -128,3 +128,127 @@ export default function TopNavBar() {
     </div>
   );
 }
+// hooks/usePagination.js
+
+import { useMemo, useState } from "react";
+
+export default function usePagination(data = [], pageSize = 10) {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(data.length / pageSize);
+
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return data.slice(start, start + pageSize);
+  }, [data, currentPage, pageSize]);
+
+  const nextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  const prevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  return {
+    currentPage,
+    totalPages,
+    paginatedData,
+    nextPage,
+    prevPage,
+    setCurrentPage
+  };
+}// components/Pagination.jsx
+
+export default function Pagination({
+  currentPage,
+  totalPages,
+  onNext,
+  onPrev,
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "10px",
+        marginTop: "15px",
+      }}
+    >
+      <button
+        onClick={onPrev}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </button>
+
+      <span>
+        Page {currentPage} of {totalPages}
+      </span>
+
+      <button
+        onClick={onNext}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </button>
+    </div>
+  );
+}
+
+
+import usePagination from "./hooks/usePagination";
+import Pagination from "./components/Pagination";
+
+export default function MyTable() {
+
+  const tableData = [
+    { id: 1, name: "Server1" },
+    { id: 2, name: "Server2" },
+    { id: 3, name: "Server3" },
+    // ...1000 rows
+  ];
+
+  const {
+    paginatedData,
+    currentPage,
+    totalPages,
+    nextPage,
+    prevPage
+  } = usePagination(tableData, 10);
+
+  return (
+    <>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Server</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {paginatedData.map(row => (
+            <tr key={row.id}>
+              <td>{row.id}</td>
+              <td>{row.name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onNext={nextPage}
+        onPrev={prevPage}
+      />
+    </>
+  );
+}
+
+
+
+
+
+
