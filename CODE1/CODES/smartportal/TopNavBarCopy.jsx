@@ -769,6 +769,7 @@ while true; do
 
     sleep "$LOOP_SLEEP"
 done
+echo "rsync test $(date)" > /tmp/rsync_test.txt && time timeout 20 rsync -az --checksum -e "ssh -p 3000 -o BatchMode=yes -o ConnectTimeout=10" /tmp/rsync_test.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/rsync_test.txt && echo "SUCCESS" || echo "FAILED (exit code: $?)"
 
 
 
