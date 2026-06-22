@@ -650,6 +650,27 @@ export default AlertPopup;
 }
 
 
+while true
+do
+echo "running"
+dt=`cut -c 9-16 $ddata/file/MFLAGS`
+
+scp -P 3000 $npdata/gateway_${BANCS_DQPTYPE}.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/gateway_${BANCS_DQPTYPE}.txt.$dt
+scp -P 3000 $HOME/pace/tf_pen_pro_${BANCS_DQPTYPE}.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/tf_pen_pro_${BANCS_DQPTYPE}.txt_$dt
+scp -P 3000 /home/fnsonlid/queue_buildup_${BANCS_DQPTYPE}.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/queue_buildup_${BANCS_DQPTYPE}.txt.$dt
+scp -P 3000 $HOME/pace/top_m.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/top_m.txt.$dt
+scp -P 3000 $HOME/pace/topstat_m.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/topstat_m.txt.$dt
+scp -P 3000 $HOME/pace/space_m.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/space_m.txt.$dt
+scp -P 3000 $HOME/pace/rtgs_incoming_rbi_flag_${BANCS_DQPTYPE}.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/rtgs_incoming_rbi_flag_${BANCS_DQPTYPE}.txt.$dt
+scp -P 3000 $HOME/pace/rtgs_outgoing_psg_${BANCS_DQPTYPE}.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/rtgs_outgoing_psg_${BANCS_DQPTYPE}.txt.$dt
+scp -P 3000 $HOME/pace/ocr_neft_m.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/ocr_neft_m.txt.$dt
+scp -P 3000 $HOME/pace/prod_teller_logged.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/prod_teller_logged.txt.$dt
+scp -P 3000 $HOME/pace/trn_stat_m.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/trn_stat_m.txt.$dt
+
+sleep 10
+done
+
+
 
 
 
