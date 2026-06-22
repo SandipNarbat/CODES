@@ -1,1 +1,45 @@
 echo "rsync test $(date)" > /tmp/rsync_test.txt && ( rsync -az --checksum -e "ssh -p 3000 -o BatchMode=yes -o ConnectTimeout=10" /tmp/rsync_test.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/rsync_test.txt & PID=$!; ( sleep 20; kill -9 $PID 2>/dev/null ) & wait $PID 2>/dev/null && echo "SUCCESS" || echo "FAILED or TIMED OUT" )
+#!/bin/bash
+
+# Helper: only scp a file if it exists, is non-empty, and its size
+# has stopped changing (i.e. nothing is currently writing to it).
+copy_if_stable() {
+    local src="$1"
+    local dest="$2"
+
+    # #2: must exist and be non-empty
+    if [ ! -s "$src" ]; then
+        echo "skip (missing/empty): $src"
+        return
+    fi
+
+    # #3: must be stable (size unchanged after a short pause)
+    local size1 size2
+    size1=$(stat -c %s "$src" 2>/dev/null)
+    sleep 1
+    size2=$(stat -c %s "$src" 2>/dev/null)
+
+    if [ -z "$size1" ] || [ -z "$size2" ] || [ "$size1" != "$size2" ]; then
+        echo "skip (still being written): $src"
+        return
+    fi
+
+    scp -P 3000 "$src" "$dest"
+}
+
+while true
+do
+    echo "running"
+    dt=`cut -c 9-16 $ddata/file/MFLAGS`
+
+    copy_if_stable "$npdata/gateway_${BANCS_DQPTYPE}.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/gateway_${BANCS_DQPTYPE}.txt.$dt"
+    copy_if_stable "$HOME/pace/tf_pen_pro_${BANCS_DQPTYPE}.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/tf_pen_pro_${BANCS_DQPTYPE}.txt_$dt"
+    copy_if_stable "/home/fnsonlid/queue_buildup_${BANCS_DQPTYPE}.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/queue_buildup_${BANCS_DQPTYPE}.txt.$dt"
+    copy_if_stable "$HOME/pace/top_m.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/top_m.txt.$dt"
+    copy_if_stable "$HOME/pace/topstat_m.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/topstat_m.txt.$dt"
+    copy_if_stable "$HOME/pace/space_m.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/space_m.txt.$dt"
+    copy_if_stable "$HOME/pace/rtgs_incoming_rbi_flag_${BANCS_DQPTYPE}.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/rtgs_incoming_rbi_flag_${BANCS_DQPTYPE}.txt.$dt"
+    copy_if_stable "$HOME/pace/rtgs_outgoing_psg_${BANCS_DQPTYPE}.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/rtgs_outgoing_psg_${BANCS_DQPTYPE}.txt.$dt"
+    copy_if_stable "$HOME/pace/ocr_neft_m.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/ocr_neft_m.txt.$dt"
+    copy_if_stable "$HOME/pace/prod_teller_logged.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/prod_teller_logged.txt.$dt"
+    copy_if_stable "$HOME/pace/trn_stat_m.txt" "smartportal02@10.177.194.138:/home/smartportal02/portal_data/trn_stat_m.txt.$dt"
