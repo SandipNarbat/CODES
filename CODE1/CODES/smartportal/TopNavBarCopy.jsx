@@ -669,6 +669,106 @@ scp -P 3000 $HOME/pace/trn_stat_m.txt smartportal02@10.177.194.138:/home/smartpo
 
 sleep 10
 done
+#!/bin/bash
+#
+# send_portal_data.sh
+# Sends portal data files to smartportal02 every loop iteration,
+# but only if the source file is fully written (size-stable) first.
+#
+# Usage: same env vars as before must be set:
+#   $ddata, $npdata, $HOME/pace/*, $BANCS_DQPTYPE, /home/fnsonlid/*
+#
+
+REMOTE_USER="smartportal02"
+REMOTE_HOST="10.177.194.138"
+REMOTE_PORT=3000
+REMOTE_DIR="/home/smartportal02/portal_data"
+STABLE_CHECK_DELAY=2     # seconds to wait between size checks
+LOOP_SLEEP=10            # seconds between loop iterations
+LOGFILE="$HOME/pace/send_portal_data.log"
+RSYNC_SSH="ssh -p $REMOTE_PORT"
+
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$LOGFILE"
+}
+
+# Returns 0 (true) if file exists and its size is unchanged after a short delay
+is_stable() {
+    local f="$1"
+    local s1 s2
+
+    if [ ! -f "$f" ]; then
+        return 1
+    fi
+
+    s1=$(stat -c %s "$f" 2>/dev/null) || return 1
+    sleep "$STABLE_CHECK_DELAY"
+    s2=$(stat -c %s "$f" 2>/dev/null) || return 1
+
+    [ "$s1" -eq "$s2" ]
+}
+
+# Checks stability, then rsyncs the file. Logs result either way.
+# rsync writes to a temp file remotely and renames atomically on completion,
+# so the destination is never left half-written even if the transfer is interrupted.
+safe_send() {
+    local src="$1"
+    local dst="$2"
+
+    if ! is_stable "$src"; then
+        log "SKIP (missing or still being written): $src"
+        return 1
+    fi
+
+    if rsync -az --checksum -e "$RSYNC_SSH" "$src" "$dst" >>"$LOGFILE" 2>&1; then
+        log "OK: $src -> $dst"
+        return 0
+    else
+        log "FAILED (rsync error): $src -> $dst"
+        return 1
+    fi
+}
+
+while true; do
+    log "running"
+
+    dt=$(cut -c 9-16 "$ddata/file/MFLAGS")
+
+    safe_send "$npdata/gateway_${BANCS_DQPTYPE}.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/gateway_${BANCS_DQPTYPE}.txt.$dt"
+
+    safe_send "$HOME/pace/tf_pen_pro_${BANCS_DQPTYPE}.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/tf_pen_pro_${BANCS_DQPTYPE}.txt_$dt"
+
+    safe_send "/home/fnsonlid/queue_buildup_${BANCS_DQPTYPE}.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/queue_buildup_${BANCS_DQPTYPE}.txt.$dt"
+
+    safe_send "$HOME/pace/top_m.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/top_m.txt.$dt"
+
+    safe_send "$HOME/pace/topstat_m.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/topstat_m.txt.$dt"
+
+    safe_send "$HOME/pace/space_m.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/space_m.txt.$dt"
+
+    safe_send "$HOME/pace/rtgs_incoming_rbi_flag_${BANCS_DQPTYPE}.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/rtgs_incoming_rbi_flag_${BANCS_DQPTYPE}.txt.$dt"
+
+    safe_send "$HOME/pace/rtgs_outgoing_psg_${BANCS_DQPTYPE}.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/rtgs_outgoing_psg_${BANCS_DQPTYPE}.txt.$dt"
+
+    safe_send "$HOME/pace/ocr_neft_m.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/ocr_neft_m.txt.$dt"
+
+    safe_send "$HOME/pace/prod_teller_logged.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/prod_teller_logged.txt.$dt"
+
+    safe_send "$HOME/pace/trn_stat_m.txt" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/trn_stat_m.txt.$dt"
+
+    sleep "$LOOP_SLEEP"
+done
 
 
 
