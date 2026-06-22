@@ -1,0 +1,1 @@
+echo "rsync test $(date)" > /tmp/rsync_test.txt && ( rsync -az --checksum -e "ssh -p 3000 -o BatchMode=yes -o ConnectTimeout=10" /tmp/rsync_test.txt smartportal02@10.177.194.138:/home/smartportal02/portal_data/rsync_test.txt & PID=$!; ( sleep 20; kill -9 $PID 2>/dev/null ) & wait $PID 2>/dev/null && echo "SUCCESS" || echo "FAILED or TIMED OUT" )
